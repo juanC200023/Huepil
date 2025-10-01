@@ -1,278 +1,66 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sistema Huepil - Centro de Salud</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>App Huepil</title>
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: system-ui, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #eee; }
-        .login-form { max-width: 400px; margin: 0 auto; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        .btn { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px; }
-        .btn:hover { background: #0056b3; }
-        .btn.secondary { background: #6c757d; }
-        .btn.danger { background: #dc3545; }
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
-        .tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; }
-        .tab.active { border-bottom-color: #007bff; background: #f8f9fa; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { border: 1px solid #ddd; border-radius: 4px; padding: 15px; }
-        .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .table th, .table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        .table th { background: #f8f9fa; font-weight: bold; }
-        .status { padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-        .status.reservado { background: #fff3cd; color: #856404; }
-        .status.presente { background: #d4edda; color: #155724; }
-        .status.ausente { background: #f8d7da; color: #721c24; }
-        .status.cancelado { background: #f1f3f4; color: #495057; }
+        body { font-family: Arial, sans-serif; margin: 20px; }
         .hidden { display: none; }
-        .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
-        .alert.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .user-info { font-size: 14px; color: #666; }
+        .tab { display: inline-block; padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; margin-right: 5px; }
+        .tab.active { background-color: #007bff; color: white; }
+        .tab-content { border: 1px solid #ccc; padding: 20px; margin-top: 10px; }
+        .tab-content.active { display: block; }
+        .tab-content { display: none; }
+        .btn { padding: 10px 20px; cursor: pointer; background-color: #007bff; color: white; border: none; }
+        .alert { margin-top: 10px; }
+        .alert.error { color: red; }
+        .alert.success { color: green; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="loginSection">
-            <div class="login-form">
-                <h2>Sistema Huepil - Login</h2>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input id="email" type="email" placeholder="tu@email.com">
-                </div>
-                <div class="form-group">
-                    <label for="password">Contraseña:</label>
-                    <input id="password" type="password" placeholder="contraseña">
-                </div>
-                <button class="btn" id="btnIngresar">Ingresar</button>
-                <div id="loginMessage" class="alert hidden"></div>
-            </div>
+
+    <!-- Login -->
+    <div id="loginSection">
+        <h2>Iniciar Sesión</h2>
+        <input type="email" id="email" placeholder="Email" /><br /><br />
+        <input type="password" id="password" placeholder="Contraseña" /><br /><br />
+        <button class="btn" id="btnIngresar">Ingresar</button>
+        <div id="loginMessage" class="alert hidden"></div>
+    </div>
+
+    <!-- Panel Principal -->
+    <div id="mainSection" class="hidden">
+        <h2>Panel Principal</h2>
+        <div>Usuario: <span id="userInfo"></span> <button id="btnLogout" class="btn" style="background:#dc3545;">Cerrar sesión</button></div>
+        <div id="tabs" style="margin-top:20px;">
+            <div class="tab active" data-tab="turnos">Turnos</div>
+            <div class="tab" data-tab="pacientes">Pacientes</div>
+            <div class="tab" data-tab="historias">Historias Clínicas</div>
+            <div id="adminTab" class="tab hidden" data-tab="usuarios">Usuarios</div>
         </div>
 
-        <div id="mainSection" class="hidden">
-            <div class="header">
-                <h1>Sistema Huepil</h1>
-                <div>
-                    <span id="userInfo" class="user-info"></span>
-                    <button class="btn secondary" btn="logout()">Cerrar Sesión</button>
-                </div>
-            </div>
-
-            <div class="tabs">
-                <div class="tab active" btn="showTab('turnos')">Turnos</div>
-                <div class="tab" btn="showTab('pacientes')">Pacientes</div>
-                <div class="tab" btn="showTab('historias')">Historias Clínicas</div>
-                <div id="adminTab" class="tab hidden" btn="showTab('usuarios')">Usuarios</div>
-            </div>
-
-            <!-- Tab Turnos -->
-            <div id="turnosContent" class="tab-content active">
-                <div class="grid">
-                    <div class="card" id="crearTurnoCard">
-                        <h3>Crear Turno</h3>
-                        <div class="form-group">
-                            <label>Paciente:</label>
-                            <select id="turnoPaciente">
-                                <option value="">Seleccionar paciente...</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Profesional:</label>
-                            <select id="turnoProfesional">
-                                <option value="">Seleccionar profesional...</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Fecha y Hora:</label>
-                            <input id="turnoFecha" type="datetime-local">
-                        </div>
-                        <div class="form-group">
-                            <label>Centro:</label>
-                            <input id="turnoCentro" placeholder="Centro de atención">
-                        </div>
-                        <div class="form-group">
-                            <label>Servicio:</label>
-                            <input id="turnoServicio" placeholder="Tipo de servicio">
-                        </div>
-                        <button class="btn" onclick="crearTurno()">Crear Turno</button>
-                    </div>
-
-                    <div class="card">
-                        <h3>Filtros</h3>
-                        <div class="form-group">
-                            <label>Desde:</label>
-                            <input id="filtroDesde" type="date">
-                        </div>
-                        <div class="form-group">
-                            <label>Hasta:</label>
-                            <input id="filtroHasta" type="date">
-                        </div>
-                        <div class="form-group">
-                            <label>Estado:</label>
-                            <select id="filtroEstado">
-                                <option value="">Todos</option>
-                                <option value="reservado">Reservado</option>
-                                <option value="presente">Presente</option>
-                                <option value="ausente">Ausente</option>
-                                <option value="cancelado">Cancelado</option>
-                                <option value="ausente_profesional">Ausente Profesional</option>
-                            </select>
-                        </div>
-                        <button class="btn" onclick="listarTurnos()">Buscar</button>
-                        <button class="btn secondary" onclick="turnosHoy()">Turnos de Hoy</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>Lista de Turnos</h3>
-                    <div id="turnosLista"></div>
-                </div>
-            </div>
-
-            <!-- Tab Pacientes -->
-            <div id="pacientesContent" class="tab-content">
-                <div class="grid">
-                    <div class="card" id="crearPacienteCard">
-                        <h3>Crear Paciente</h3>
-                        <div class="form-group">
-                            <label>DNI:</label>
-                            <input id="pacienteDni" placeholder="DNI">
-                        </div>
-                        <div class="form-group">
-                            <label>Apellido:</label>
-                            <input id="pacienteApellido" placeholder="Apellido" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Nombre:</label>
-                            <input id="pacienteNombre" placeholder="Nombre" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Teléfono:</label>
-                            <input id="pacienteTelefono" placeholder="Teléfono">
-                        </div>
-                        <div class="form-group">
-                            <label>Email:</label>
-                            <input id="pacienteEmail" type="email" placeholder="Email">
-                        </div>
-                        <div class="form-group">
-                            <label>Obra Social:</label>
-                            <input id="pacienteObraSocial" placeholder="Obra Social">
-                        </div>
-                        <button class="btn" onclick="crearPaciente()">Crear Paciente</button>
-                    </div>
-
-                    <div class="card">
-                        <h3>Buscar Pacientes</h3>
-                        <div class="form-group">
-                            <label>Buscar:</label>
-                            <input id="buscarPaciente" placeholder="Nombre, apellido o DNI">
-                        </div>
-                        <button class="btn" onclick="listarPacientes()">Buscar</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>Lista de Pacientes</h3>
-                    <div id="pacientesLista"></div>
-                </div>
-            </div>
-
-            <!-- Tab Historias -->
-            <div id="historiasContent" class="tab-content">
-                <div class="card">
-                    <h3>Seleccionar Paciente</h3>
-                    <select id="historiaPaciente" onchange="cargarHistorias()">
-                        <option value="">Seleccionar paciente...</option>
-                    </select>
-                </div>
-
-                <div class="card" id="crearHistoriaCard" style="display: none;">
-                    <h3>Nueva Historia Clínica</h3>
-                    <div class="form-group">
-                        <label>Tipo:</label>
-                        <select id="historiaTipo">
-                            <option value="consulta">Consulta</option>
-                            <option value="seguimiento">Seguimiento</option>
-                            <option value="diagnostico">Diagnóstico</option>
-                            <option value="tratamiento">Tratamiento</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Título:</label>
-                        <input id="historiaTitulo" placeholder="Título de la consulta">
-                    </div>
-                    <div class="form-group">
-                        <label>Descripción:</label>
-                        <textarea id="historiaDescripcion" rows="4" placeholder="Descripción detallada"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Medicamentos:</label>
-                        <textarea id="historiaMedicamentos" rows="2" placeholder="Medicamentos recetados"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Indicaciones:</label>
-                        <textarea id="historiaIndicaciones" rows="2" placeholder="Indicaciones para el paciente"></textarea>
-                    </div>
-                    <button class="btn" onclick="crearHistoria()">Guardar Historia</button>
-                </div>
-
-                <div class="card">
-                    <h3>Historias Clínicas</h3>
-                    <div id="historiasLista"></div>
-                </div>
-            </div>
-
-            <!-- Tab Usuarios (solo admin) -->
-            <div id="usuariosContent" class="tab-content">
-                <div class="grid">
-                    <div class="card">
-                        <h3>Crear Usuario</h3>
-                        <div class="form-group">
-                            <label>Email:</label>
-                            <input id="usuarioEmail" type="email" placeholder="email@ejemplo.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Contraseña:</label>
-                            <input id="usuarioPassword" type="password" placeholder="contraseña">
-                        </div>
-                        <div class="form-group">
-                            <label>Rol:</label>
-                            <select id="usuarioRol">
-                                <option value="secretaria">Secretaria</option>
-                                <option value="profesional">Profesional</option>
-                                <option value="admin">Administrador</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Nombre:</label>
-                            <input id="usuarioNombre" placeholder="Nombre">
-                        </div>
-                        <div class="form-group">
-                            <label>Apellido:</label>
-                            <input id="usuarioApellido" placeholder="Apellido">
-                        </div>
-                        <div class="form-group">
-                            <label>Especialidad:</label>
-                            <input id="usuarioEspecialidad" placeholder="Especialidad (para profesionales)">
-                        </div>
-                        <button class="btn" onclick="crearUsuario()">Crear Usuario</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>Lista de Usuarios</h3>
-                    <div id="usuariosLista"></div>
-                </div>
-            </div>
+        <div id="turnosContent" class="tab-content active">
+            <h3>Turnos</h3>
+            <!-- Aquí va el contenido de turnos -->
+            <div id="turnosLista"></div>
+        </div>
+        <div id="pacientesContent" class="tab-content">
+            <h3>Pacientes</h3>
+            <!-- Aquí va el contenido de pacientes -->
+        </div>
+        <div id="historiasContent" class="tab-content">
+            <h3>Historias Clínicas</h3>
+            <!-- Aquí va el contenido de historias -->
+        </div>
+        <div id="usuariosContent" class="tab-content">
+            <h3>Usuarios</h3>
+            <!-- Aquí va el contenido de usuarios -->
         </div>
     </div>
 
-    <script src="/app.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+
