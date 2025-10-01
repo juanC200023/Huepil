@@ -1,6 +1,6 @@
 let token = localStorage.getItem('token');
 let currentUser = null;
-const API = window.location.origin;
+const API = 'http://103.199.185.202:8080';
 
 // Inicialización
 window.onload = () => {
