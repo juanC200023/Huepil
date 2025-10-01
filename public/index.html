@@ -52,7 +52,7 @@
                     <label for="password">Contraseña:</label>
                     <input id="password" type="password" placeholder="contraseña">
                 </div>
-                <button class="btn" onclick="login()">Ingresar</button>
+                <button class="btn" id="btnIngresar">Ingresar</button>
                 <div id="loginMessage" class="alert hidden"></div>
             </div>
         </div>
@@ -62,15 +62,15 @@
                 <h1>Sistema Huepil</h1>
                 <div>
                     <span id="userInfo" class="user-info"></span>
-                    <button class="btn secondary" onclick="logout()">Cerrar Sesión</button>
+                    <button class="btn secondary" btn="logout()">Cerrar Sesión</button>
                 </div>
             </div>
 
             <div class="tabs">
-                <div class="tab active" onclick="showTab('turnos')">Turnos</div>
-                <div class="tab" onclick="showTab('pacientes')">Pacientes</div>
-                <div class="tab" onclick="showTab('historias')">Historias Clínicas</div>
-                <div id="adminTab" class="tab hidden" onclick="showTab('usuarios')">Usuarios</div>
+                <div class="tab active" btn="showTab('turnos')">Turnos</div>
+                <div class="tab" btn="showTab('pacientes')">Pacientes</div>
+                <div class="tab" btn="showTab('historias')">Historias Clínicas</div>
+                <div id="adminTab" class="tab hidden" btn="showTab('usuarios')">Usuarios</div>
             </div>
 
             <!-- Tab Turnos -->
